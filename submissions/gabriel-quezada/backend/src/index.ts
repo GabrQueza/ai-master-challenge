@@ -158,8 +158,7 @@ function calculateScore(
   // Cap at 99 — 100 is reserved for Won
   score = Math.min(score, 99);
 
-  breakdown.explanation = `Score: ${score}/99. Stage: ${breakdown.stage}/35 · Financial: ${breakdown.financial}/40 · Recency: ${breakdown.time}/25.`;
-
+  breakdown.explanation = `Deal prioritário no estágio ${deal.deal_stage} (+${breakdown.stage} pts), impulsionado pelo potencial do produto ${deal.product} e porte da conta ${deal.account} (+${breakdown.financial} pts), com engajamento recente no pipeline (+${breakdown.time} pts).`;
   return { score, breakdown };
 }
 
@@ -247,10 +246,12 @@ app.get("/api/stats", (req: Request, res: Response) => {
     (d) => ACTIVE_STAGES.has(d.deal_stage) && (d.score || 0) > 75,
   ).length;
 
-  const totalPipelineValue = enriched.reduce(
-    (sum, d) => sum + (parseFloat(d.close_value) || 0),
-    0,
-  );
+  const totalPipelineValue = enriched.reduce((sum, d) => {
+    const closeVal = parseFloat(d.close_value) || 0;
+    if (closeVal > 0) return sum + closeVal;
+    const prod = dbMaps.products.get(d.product);
+    return sum + (prod ? parseFloat(prod.sales_price) || 0 : 0);
+  }, 0);
 
   res.json({
     totalDeals,
