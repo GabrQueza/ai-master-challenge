@@ -50,9 +50,9 @@ export const DealModal = ({ isOpen, onClose, dealId }: { isOpen: boolean, onClos
                 <Text fontWeight="bold" mb={3}>AI Score Breakdown</Text>
                 
                 <VStack spacing={3} align="stretch">
-                  <ScoreBar label="Deal Stage" value={deal.score_breakdown?.stage} max={30} />
-                  <ScoreBar label="Financial Valuation" value={deal.score_breakdown?.financial} max={40} />
-                  <ScoreBar label="Time in Pipeline" value={deal.score_breakdown?.time} max={30} />
+                  <ScoreBar label="Deal Stage" value={deal.score_breakdown?.stage} max={35} />
+                  <ScoreBar label="Financial Potential" value={deal.score_breakdown?.financial} max={40} />
+                  <ScoreBar label="Recency / Freshness" value={deal.score_breakdown?.time} max={25} />
                 </VStack>
               </Box>
 
