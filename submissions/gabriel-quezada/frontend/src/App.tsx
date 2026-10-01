@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
-import { Box, Container, Heading, VStack, useDisclosure, Spinner, Center } from '@chakra-ui/react';
+import { useState, useEffect, useCallback } from 'react';
+import { Box, Container, Heading, Stack, useDisclosure, Spinner, Center } from '@chakra-ui/react';
 import { Header } from './components/Header';
 import { Filters } from './components/Filters';
 import { PipelineTable } from './components/PipelineTable';
@@ -76,30 +76,53 @@ export default function App() {
   }, [onOpen]);
 
   return (
-    <Box minH="100vh" bg="gray.50" py={8}>
-      <Container maxW="container.xl">
-        <VStack spacing={8} align="stretch">
-          <Heading as="h1" size="xl" color="blue.700">
-            Lead Scorer Dashboard
-          </Heading>
-          
-          <Header stats={stats} />
-          {loadingStats && !stats && (
-             <Center><Spinner color="blue.500" /></Center>
-          )}
-          <Filters filters={filters} setFilters={setFilters} />
-          <PipelineTable 
-            data={pipeline} 
-            onOpenDeal={handleOpenDeal} 
+    <Box
+      display="flex"
+      flexDirection="column"
+      h="100vh"
+      minH="600px"
+      bg="gray.50"
+      overflow="hidden"
+    >
+      {/* Sticky top section */}
+      <Box
+        as="header"
+        bg="white"
+        borderBottomWidth="1px"
+        borderColor="gray.200"
+        shadow="sm"
+        flexShrink={0}
+        zIndex={10}
+      >
+        <Container maxW="container.xl" py={4}>
+          <Stack spacing={4}>
+            <Heading as="h1" size="lg" color="blue.700">
+              Lead Scorer Dashboard
+            </Heading>
+            {loadingStats && !stats ? (
+              <Center py={2}><Spinner color="blue.500" size="sm" /></Center>
+            ) : (
+              <Header stats={stats} />
+            )}
+            <Filters filters={filters} setFilters={setFilters} />
+          </Stack>
+        </Container>
+      </Box>
+
+      {/* Scrollable table area */}
+      <Box flex={1} overflowY="auto" px={4} py={4} minH="300px">
+        <Container maxW="container.xl">
+          <PipelineTable
+            data={pipeline}
+            onOpenDeal={handleOpenDeal}
             loading={loadingPipeline}
             loadingMore={loadingMore}
             hasMore={hasMore}
             onLoadMore={handleLoadMore}
           />
-          
-        </VStack>
-      </Container>
-      
+        </Container>
+      </Box>
+
       <DealModal isOpen={isOpen} onClose={onClose} dealId={selectedDealId} />
     </Box>
   );
