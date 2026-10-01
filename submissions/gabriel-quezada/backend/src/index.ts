@@ -141,7 +141,7 @@ app.get('/api/health', (req: Request, res: Response) => {
 });
 
 app.get('/api/pipeline', (req: Request, res: Response) => {
-  const { deal_stage, sales_agent, manager, regional_office } = req.query;
+  const { deal_stage, sales_agent, manager, regional_office, page, limit } = req.query;
   
   let results = db.salesPipeline.map(enrichDeal);
   
@@ -153,7 +153,19 @@ app.get('/api/pipeline', (req: Request, res: Response) => {
   // Sort by score descending
   results.sort((a, b) => (b.score || 0) - (a.score || 0));
   
-  res.json({ count: results.length, data: results });
+  const pageNum = parseInt(page as string) || 1;
+  const limitNum = parseInt(limit as string) || 50;
+  const startIndex = (pageNum - 1) * limitNum;
+  const endIndex = startIndex + limitNum;
+  
+  const paginatedResults = results.slice(startIndex, endIndex);
+  
+  res.json({ 
+    count: results.length, 
+    data: paginatedResults,
+    page: pageNum,
+    totalPages: Math.ceil(results.length / limitNum)
+  });
 });
 
 app.get('/api/stats', (req: Request, res: Response) => {
